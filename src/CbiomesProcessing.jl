@@ -1,6 +1,6 @@
 module CbiomesProcessing
 
-using MAT
+using MAT, SparseArrays
 
 #greet() = print("Hello World! [2]")
 
