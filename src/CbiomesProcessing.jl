@@ -6,6 +6,6 @@ using MAT, SparseArrays
 
 include("byproducts.jl")
 
-export AverageYear, interp2d
+export AverageYear, interp_SPM, read_SPM 
 
 end # module
