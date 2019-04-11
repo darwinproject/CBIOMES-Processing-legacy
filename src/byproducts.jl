@@ -1,15 +1,5 @@
 # byproducts.jl
 
-#Example:
-if false
-    #in=fill(1.,(90,1170))
-    in=fill(1.,(90,1170,50))
-    dirIn="devel/interp_output/"
-    SPM,lon,lat=read_SPM(dirIn)
-    siz=size(lon)
-    out=interp_SPM(in,SPM,siz)
-end
-
 AverageYear() = print("To be continued...")
 
 function interp_SPM(in::Array{T,N}) where {T,N}
@@ -42,8 +32,11 @@ function interp_SPM(in::Array{T,N},SPM,siz) where {T,N}
     #matrix product
     tmp0=SPM*tmp0
     tmp1=SPM*tmp1
+    tmp1=tmp1./tmp0
+    #this may be redundant:
+    tmp1[tmp0 .== 0.] .= NaN
     #output
-    out=reshape(tmp1./tmp0,siz)
+    out=reshape(tmp1,siz)
     m==1 ? out=dropdims(out,dims=3) : nothing
     return out
 end
