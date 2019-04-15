@@ -2,6 +2,12 @@
 
 AverageYear() = print("To be continued...")
 
+"""
+    interp_SPM(in::Array{T,N}) where {T,N}
+
+Reads `SPM,lon,lat` via `read_SPM` and calls
+interp_SPM(in,SPM,siz).
+"""
 function interp_SPM(in::Array{T,N}) where {T,N}
     dirIn="devel/interp_output/"
     SPM,lon,lat=read_SPM(dirIn)
@@ -9,6 +15,12 @@ function interp_SPM(in::Array{T,N}) where {T,N}
     out=interp_SPM(in,SPM,siz)
 end
 
+"""
+    read_SPM(dirIn::String)
+
+Reads pre-computed interpolation (sparse matrix) from
+`dirIn*"interp_precomputed.mat"`.
+"""
 function read_SPM(dirIn::String)
     #vars = matread(dirIn*"interp_precomputed.mat")
     file = matopen(dirIn*"interp_precomputed.mat")
@@ -21,6 +33,11 @@ function read_SPM(dirIn::String)
     return SPM,lon,lat
 end
 
+"""
+    interp_SPM(in::Array{T,N},SPM,siz) where {T,N}
+
+Interpolate `in` using `SPM` to grid of size `siz`.
+"""
 function interp_SPM(in::Array{T,N},SPM,siz) where {T,N}
     #input
     l=size(in,1)*size(in,2);

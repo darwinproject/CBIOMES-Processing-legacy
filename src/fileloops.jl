@@ -1,4 +1,10 @@
 
+"""
+    loop_example1(indx,SPM,siz)
+
+Calls `read!` and `interp_SPM` in a loop that corresponds to a subset of
+binary model output files (`filList[indx]`)
+"""
 function loop_example1(indx,SPM,siz)
    dirIn="devel/diags/"
    filIn="state_2d_set1"

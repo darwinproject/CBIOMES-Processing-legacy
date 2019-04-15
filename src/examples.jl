@@ -1,8 +1,12 @@
 
 #Examples:
 
+"""
+    cbioproc_example1()
+
+A 3D example without land mask or MeshArrays.
+"""
 function cbioproc_example1()
-    #a 3D example without land mask or MeshArrays
     in=fill(1.,(90,1170,50))
     dirIn="devel/interp_output/"
     SPM,lon,lat=read_SPM(dirIn)
@@ -12,6 +16,11 @@ function cbioproc_example1()
     heatmap(vec(lon[:,1]),vec(lat[1,:]),transpose(out[1]))
 end
 
+"""
+    cbioproc_example2()
+
+A 2D example with MeshArrays + mask or loop.
+"""
 function cbioproc_example2()
     #a 2D example with MeshArrays + mask or loop
     GCMGridSpec()

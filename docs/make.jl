@@ -5,6 +5,10 @@ makedocs(
     sitename = "CbiomesProcessing",
     format = :html,
     modules = [CbiomesProcessing]
+#    pages = Any[
+#    "Home" => "index.md",
+#    "Codes" => "dev1.md"
+#    ]
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
