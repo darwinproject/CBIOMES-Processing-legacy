@@ -12,8 +12,11 @@ function cbioproc_example1()
     SPM,lon,lat=read_SPM(dirIn)
     siz=size(lon)
     out=interp_SPM(in,SPM,siz)
-    out=loop_example1(1:13,SPM,siz);
-    heatmap(vec(lon[:,1]),vec(lat[1,:]),transpose(out[1]))
+    #
+    outLoop,outName=loop_exampleB(1:13,SPM,siz)
+    tmp=transpose(outLoop[1,1])
+    heatmap(vec(lon[:,1]),vec(lat[1,:]),tmp)
+    return outLoop,outName
 end
 
 """
@@ -35,8 +38,8 @@ function cbioproc_example2()
     outMsk=interp_SPM(in,SPM,siz)
     heatmap(vec(lon[:,1]),vec(lat[1,:]),transpose(outMsk))
     #
-    outLoop=loop_example1(1:13,SPM,siz);
+    outLoop=loop_exampleA(1:13,SPM,siz);
     heatmap(vec(lon[:,1]),vec(lat[1,:]),transpose(outLoop[1]))
     #
-    return outMsk, outLoop
+    return outLoop,outMsk
 end
