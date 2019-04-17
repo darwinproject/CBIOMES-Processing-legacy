@@ -65,7 +65,7 @@ function cbioproc_example3()
 end
 
 """
-    cbioproc_ex3dist1()
+    cbioproc_ex3dist1(indx::Int)
 
 Example that uses DistributedArrays to broacast over file indices
 """

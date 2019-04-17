@@ -36,11 +36,14 @@ julia> outLoop2,outMsk=cbioproc_example2()
 ```@docs
 cbioproc_example1()
 cbioproc_example2()
+cbioproc_example3()
+CbiomesProcessing.cbioproc_ex3dist1(indx::Int)
 ```
 
 ```@docs
 loop_exampleA(indx,SPM,siz)
 loop_exampleB(indx,SPM,siz)
+loop_exampleC(indx,SPM,siz)
 ```
 
 ```@docs
@@ -48,4 +51,5 @@ read_SPM(dirIn::String)
 interp_SPM(in::Array{T,N}) where {T,N}
 interp_SPM(in::Array{T,N},SPM,siz) where {T,N}
 MetaFileRead(filIn::String)
+start_workers(nwrkrs::Int)
 ```
