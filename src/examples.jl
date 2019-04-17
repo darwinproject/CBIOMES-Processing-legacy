@@ -43,3 +43,36 @@ function cbioproc_example2()
     #
     return outLoop,outMsk
 end
+
+"""
+    cbioproc_example3()
+
+Example that uses DistributedArrays to broacast over file indices as follows
+
+```
+using CbiomesProcessing, Distributed
+start_workers(3)
+@everywhere using CbiomesProcessing
+MetaFile=cbioproc_example3()
+```
+"""
+function cbioproc_example3()
+    indx=distribute(collect(1:12))
+    indx.indices
+    indx.localpart
+
+    MetaFile=cbioproc_ex3dist1.(indx)
+end
+
+"""
+    cbioproc_ex3dist1()
+
+Example that uses DistributedArrays to broacast over file indices
+"""
+function cbioproc_ex3dist1(indx::Int)
+    dirIn="devel/interp_output/"
+    SPM,lon,lat=read_SPM(dirIn)
+    siz=size(lon)
+    MetaFile=loop_exampleC(indx,SPM,siz)
+    return MetaFile
+end
