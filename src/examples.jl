@@ -7,8 +7,11 @@
 A 3D example without land mask or MeshArrays.
 """
 function cbioproc_example1()
+    cbioproc_example1("devel/interp_output/")
+end
+
+function cbioproc_example1(dirIn::String)
     in=fill(1.,(90,1170,50))
-    dirIn="devel/interp_output/"
     SPM,lon,lat=read_SPM(dirIn)
     siz=size(lon)
     out=interp_SPM(in,SPM,siz)
@@ -25,15 +28,19 @@ end
 A 2D example with MeshArrays + mask or loop.
 """
 function cbioproc_example2()
-    #a 2D example with MeshArrays + mask or loop
+    dirIn="devel/"
+    cbioproc_example2(dirIn)
+end
+
+function cbioproc_example2(dirIn::String)
+    #
     GCMGridSpec()
     GCMGridLoad()
     msk2d=mask(view(MeshArrays.hFacC,:,:,1),NaN,0)
-    dirIn="devel/interp_output/"
     SPM,lon,lat=read_SPM(dirIn)
     siz=size(lon)
     #
-    in=read_bin("devel/diags/state_2d_set1.0000000732.data",Float32)
+    in=read_bin(dirIn*"diags/state_2d_set1.0000000732.data",Float32)
     in=convert2gcmfaces(in[:,:,1].*msk2d);
     outMsk=interp_SPM(in,SPM,siz)
     heatmap(vec(lon[:,1]),vec(lat[1,:]),transpose(outMsk))
