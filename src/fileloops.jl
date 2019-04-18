@@ -81,13 +81,18 @@ function loop_exampleB(indx,SPM,siz)
 end
 
 """
-    loop_exampleC(indx,SPM,siz)
+    loop_task1(indx,SPM,siz,msk)
 
 Call `read!` and `interp_SPM` in a loop that corresponds to a subset of
 binary model output files (`filList[indx]`) and write the result to
 file with one subfolder for each variable
 """
-function loop_exampleC(indx,SPM,siz)
+function loop_task1(indx,SPM,siz)
+   msk=missing
+   MetaFile=loop_task1(indx,SPM,siz,msk)
+end
+
+function loop_task1(indx,SPM,siz,msk)
    dirIn="devel/diags/"
    filIn="state_2d_set1"
    dirOut="devel/diags_interp/"
@@ -118,6 +123,7 @@ function loop_exampleC(indx,SPM,siz)
          nd==3 ? tmp=Array{Float32,2}(undef,(90,1170,50)) : nothing
          read!(fid,tmp)
          tmp = hton.(tmp)
+         !ismissing(msk) ? tmp=tmp.*msk : nothing
          tmp=interp_SPM(tmp,SPM,siz)
          tmp=Float32.(tmp)
          #
