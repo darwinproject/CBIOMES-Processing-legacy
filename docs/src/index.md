@@ -7,7 +7,7 @@ To be continued ...
 ```@contents
 ```
 
-In an early implementation (see [dev1](@ref)), the `CbiomesProcessing` module included:
+In an early implementation (see [API](@ref)), the `CbiomesProcessing` module included:
 
 - `examples.jl` provides top-level driver examples (see [examples](@ref))
 - `fileloops.jl` loops over binary files (e.g., see [`loop_exampleB()`](@ref))
@@ -31,25 +31,9 @@ julia> outLoop2,outMsk=cbioproc_example2()
 ```@index
 ```
 
-## dev1
+## API
 
-```@docs
-cbioproc_example1()
-cbioproc_example2()
-cbioproc_example3()
-CbiomesProcessing.cbioproc_ex3dist1(indx::Int)
-```
-
-```@docs
-loop_exampleA(indx,SPM,siz)
-loop_exampleB(indx,SPM,siz)
-loop_exampleC(indx,SPM,siz)
-```
-
-```@docs
-read_SPM(dirIn::String)
-interp_SPM(in::Array{T,N}) where {T,N}
-interp_SPM(in::Array{T,N},SPM,siz) where {T,N}
-MetaFileRead(filIn::String)
-start_workers(nwrkrs::Int)
+```@autodocs
+Modules = [CbiomesProcessing]
+Order   = [:function, :type]
 ```
