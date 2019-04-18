@@ -82,7 +82,7 @@ function cbioproc_example2(dirIn::String)
     GCMGridSpec()
     GCMGridLoad()
     msk2d=mask(view(MeshArrays.hFacC,:,:,1),NaN,0)
-    SPM,lon,lat=read_SPM(dirIn)
+    SPM,lon,lat=read_SPM(dirIn*"interp_output/")
     siz=size(lon)
     #
     in=read_bin(dirIn*"diags/state_2d_set1.0000000732.data",Float32)
