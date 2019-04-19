@@ -19,10 +19,12 @@ And to visualize results, for example:
 
 ```
 using FortranFiles, Plots
+k=1
 recl=720*360*4
-fil="devel/diags_interp/ETAN/ETAN.0000000732.data"
+fil="diags_interp/ETAN/ETAN.0000000732.data"
+#fil="diags_interp/THETA/TETA.0000000024.data"
 f =  FortranFile(fil,"r",access="direct",recl=recl,convert="big-endian")
-tmp=read(f,rec=1,(Float32,(720,360))); close(f)
+tmp=read(f,rec=k,(Float32,(720,360))); close(f)
 heatmap(tmp)
 ```
 """
@@ -41,9 +43,10 @@ end
 Interpolate all variables for one record
 """
 function cbioproc_task1(indx::Int)
-    dirIn="devel/interp_output/"
+    dirIn=""
     M=load(dirIn*"MTRX.jld")
     MetaFile=loop_task1(indx,M["MTRX"],M["siz2d"],M["msk2d"])
+    #MetaFile=loop_task1(indx,M["MTRX"],M["siz3d"],M["msk3d"])
 end
 
 """
@@ -52,7 +55,7 @@ end
 A 3D example without land mask or MeshArrays.
 """
 function cbioproc_example1()
-    cbioproc_example1("devel/interp_output/")
+    cbioproc_example1("")
 end
 
 function cbioproc_example1(dirIn::String)
@@ -73,7 +76,7 @@ end
 A 2D example with MeshArrays + mask or loop.
 """
 function cbioproc_example2()
-    dirIn="devel/"
+    dirIn=""
     cbioproc_example2(dirIn)
 end
 
@@ -82,7 +85,7 @@ function cbioproc_example2(dirIn::String)
     GCMGridSpec()
     GCMGridLoad()
     msk2d=mask(view(MeshArrays.hFacC,:,:,1),NaN,0)
-    SPM,lon,lat=read_SPM(dirIn*"interp_output/")
+    SPM,lon,lat=read_SPM(dirIn)
     siz=size(lon)
     #
     in=read_bin(dirIn*"diags/state_2d_set1.0000000732.data",Float32)
@@ -102,7 +105,7 @@ end
 Example that uses DistributedArrays to broacast over file indices
 """
 function cbioproc_ex3dist1(indx::Int)
-    dirIn="devel/interp_output/"
+    dirIn=""
     SPM,lon,lat=read_SPM(dirIn)
     siz=size(lon)
     MetaFile=loop_task1(indx,SPM,siz)

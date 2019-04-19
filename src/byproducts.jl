@@ -9,7 +9,7 @@ Reads `SPM,lon,lat` via `read_SPM` and calls
 InterpMatrix(in,SPM,siz).
 """
 function InterpMatrix(in::Array{T,N}) where {T,N}
-    dirIn="devel/interp_output/"
+    dirIn=""
     SPM,lon,lat=read_SPM(dirIn)
     siz=size(lon)
     out=InterpMatrix(in,SPM,siz)
@@ -71,7 +71,7 @@ function prep_interp_jld()
     msk2d=convert2gcmfaces(msk2d)
     msk3d=convert2gcmfaces(msk3d)
 
-    dirIn="devel/interp_output/"
+    dirIn=""
     MTRX,lon,lat=read_SPM(dirIn)
     lon=vec(lon[:,1])
     lat=vec(lat[1,:])

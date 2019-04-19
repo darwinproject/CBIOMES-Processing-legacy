@@ -22,9 +22,10 @@ function loop_task1(indx,SPM,siz)
 end
 
 function loop_task1(indx,SPM,siz,msk)
-   dirIn="devel/diags/"
+   dirIn="diags/"
    filIn="state_2d_set1"
-   dirOut="devel/diags_interp/"
+   #filIn="daily_3d_set1"
+   dirOut="diags_interp/"
    !isdir(dirOut) ? mkdir(dirOut) : nothing
 
    tmp1=readdir(dirIn)
@@ -49,7 +50,7 @@ function loop_task1(indx,SPM,siz,msk)
       fid = open(fil)
       for vv=1:nv
          tmp=Array{Float32,2}(undef,(90,1170))
-         nd==3 ? tmp=Array{Float32,2}(undef,(90,1170,50)) : nothing
+         nd==3 ? tmp=Array{Float32,3}(undef,(90,1170,50)) : nothing
          read!(fid,tmp)
          tmp = hton.(tmp)
          !ismissing(msk) ? tmp=tmp.*msk : nothing
