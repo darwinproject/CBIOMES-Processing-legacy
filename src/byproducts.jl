@@ -3,24 +3,24 @@
 AverageYear() = print("To be continued...")
 
 """
-    interp_SPM(in::Array{T,N}) where {T,N}
+    InterpMatrix(in::Array{T,N}) where {T,N}
 
 Reads `SPM,lon,lat` via `read_SPM` and calls
-interp_SPM(in,SPM,siz).
+InterpMatrix(in,SPM,siz).
 """
-function interp_SPM(in::Array{T,N}) where {T,N}
+function InterpMatrix(in::Array{T,N}) where {T,N}
     dirIn="devel/interp_output/"
     SPM,lon,lat=read_SPM(dirIn)
     siz=size(lon)
-    out=interp_SPM(in,SPM,siz)
+    out=InterpMatrix(in,SPM,siz)
 end
 
 """
-    interp_SPM(in::Array{T,N},SPM,siz) where {T,N}
+    InterpMatrix(in::Array{T,N},SPM,siz) where {T,N}
 
 Interpolate `in` using `SPM` to grid of size `siz`.
 """
-function interp_SPM(in::Array{T,N},SPM,siz) where {T,N}
+function InterpMatrix(in::Array{T,N},SPM::SparseMatrixCSC,siz) where {T,N}
     #input
     l=size(in,1)*size(in,2);
     m=size(in,3);

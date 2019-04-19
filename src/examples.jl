@@ -23,7 +23,7 @@ recl=720*360*4
 fil="devel/diags_interp/ETAN/ETAN.0000000732.data"
 f =  FortranFile(fil,"r",access="direct",recl=recl,convert="big-endian")
 tmp=read(f,rec=1,(Float32,(720,360))); close(f)
-heatmap(tmp1)
+heatmap(tmp)
 ```
 """
 function cbioproc_distribute(indx::Union{UnitRange{Int},Array{Int,1},Int})
@@ -59,7 +59,7 @@ function cbioproc_example1(dirIn::String)
     in=fill(1.,(90,1170,50))
     SPM,lon,lat=read_SPM(dirIn)
     siz=size(lon)
-    out=interp_SPM(in,SPM,siz)
+    out=InterpMatrix(in,SPM,siz)
     #
     outLoop,outName=loop_exampleB(1:13,SPM,siz)
     tmp=transpose(outLoop[1,1])
@@ -87,7 +87,7 @@ function cbioproc_example2(dirIn::String)
     #
     in=read_bin(dirIn*"diags/state_2d_set1.0000000732.data",Float32)
     in=convert2gcmfaces(in[:,:,1].*msk2d);
-    outMsk=interp_SPM(in,SPM,siz)
+    outMsk=InterpMatrix(in,SPM,siz)
     heatmap(vec(lon[:,1]),vec(lat[1,:]),transpose(outMsk))
     #
     outLoop=loop_exampleA(1:13,SPM,siz);

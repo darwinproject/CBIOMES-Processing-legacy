@@ -15,15 +15,15 @@ Currently the reference implementation consists of
 - [`cbioproc_task1()`](@ref) (inside `examples.jl`) loads `MTRX.jld`
     - It calls `loop_task1(indx,M["MTRX"],M["siz2d"],M["msk2d"])`
 - [`loop_task1()`](@ref) (inside `fileloops.jl`) loops over file sets and variables
-    - It calls `interp_SPM` and then writes the result to a `FortranFile`
+    - It calls `InterpMatrix` and then writes the result to a `FortranFile`
 
 #### More Notes
 
 [API / Functions](@ref) further documents the `CbiomesProcessing` module functions that are included in:
 
 - `examples.jl` includes simple top-level function examples (see [Examples](@ref))
-- `fileloops.jl` includes loops over binary files (e.g., see [`loop_exampleB()`](@ref))
-- `byproducts.jl` provides lower-level operations such as [`interp_SPM()`](@ref) and [`MetaFileRead()`](@ref).
+- `fileloops.jl` includes loops over binary files (see [`loop_exampleA()`](@ref) and [`loop_exampleB()`](@ref))
+- `byproducts.jl` provides lower-level operations such as [`InterpMatrix()`](@ref) and [`MetaFileRead()`](@ref).
 
 ## Examples
 
