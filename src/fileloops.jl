@@ -10,23 +10,21 @@ function start_workers(nwrkrs::Int)
 end
 
 """
-    loop_task1(indx,SPM,siz,msk)
+    loop_task1(indx,M)
 
 Loop over a subset of model output files (`filList[indx]`), apply
-`InterpMatrix` as a postprocessing step, and write the result to
-file (one subfolder for each variable)
+`InterpMatrix` (`M`) as a postprocessing step, and write the result
+to file (one subfolder for each variable)
 """
-function loop_task1(indx,SPM,siz)
-   msk=missing
-   MetaFile=loop_task1(indx,SPM,siz,msk)
-end
-
-function loop_task1(indx,SPM,siz,msk)
+function loop_task1(indx,M)
    task=YAML.load(open("task.yml"))
    dirIn=task["InputDir"][1]
    filIn=task["InputFile"][1]
    dirOut=task["OutputDir"]
    !isdir(dirOut) ? mkdir(dirOut) : nothing
+   SPM=M["MTRX"]
+   msk=M[task["Specs"]["mask"]]
+   siz=Tuple(task["OutputSize"])
 
    tmp1=readdir(dirIn)
    tmp1=filter(x -> occursin(filIn,x),tmp1)
@@ -84,7 +82,7 @@ end
 Applies `InterpMatrix` in a loop over a subset of model output files (`filList[indx]`)
 """
 function loop_exampleA(indx,SPM,siz)
-   dirIn="devel/diags/"
+   dirIn="diags/"
    filIn="state_2d_set1"
    tmp1=readdir(dirIn)
    tmp1=filter(x -> occursin(filIn,x),tmp1)
@@ -115,7 +113,7 @@ end
 Applies `InterpMatrix` in a loop over a subset of model output files (`filList[indx]`)
 """
 function loop_exampleB(indx,SPM,siz)
-   dirIn="devel/diags/"
+   dirIn="diags/"
    filIn="state_2d_set1"
    tmp1=readdir(dirIn)
    tmp1=filter(x -> occursin(filIn,x),tmp1)

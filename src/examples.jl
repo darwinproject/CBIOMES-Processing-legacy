@@ -33,8 +33,6 @@ function cbioproc_distribute(indx::Union{UnitRange{Int},Array{Int,1},Int})
     length(i)>1 ? i=distribute(i) : nothing
     isa(i,DArray) ? println(i.indices) : nothing
     MetaFile=cbioproc_task1.(i)
-    #MetaFile=cbioproc_ex3dist1.(i)
-    #return "ok"
 end
 
 """
@@ -45,13 +43,7 @@ Interpolate all variables for one record
 function cbioproc_task1(indx::Int)
     task=YAML.load(open("task.yml"))
     M=load(task["Specs"]["file"])
-    if task["Specs"]["mask"]=="msk2d"
-        MetaFile=loop_task1(indx,M["MTRX"],M["siz2d"],M["msk2d"])
-    elseif task["Specs"]["mask"]=="msk2d"
-        MetaFile=loop_task1(indx,M["MTRX"],M["siz3d"],M["msk3d"])
-    else
-        println("nothing happened")
-    end
+    MetaFile=loop_task1(indx,M)
 end
 
 """
@@ -102,17 +94,4 @@ function cbioproc_example2(dirIn::String)
     heatmap(vec(lon[:,1]),vec(lat[1,:]),transpose(outLoop[1]))
     #
     return outLoop,outMsk
-end
-
-"""
-    cbioproc_ex3dist1(indx::Int)
-
-Example that uses DistributedArrays to broacast over file indices
-"""
-function cbioproc_ex3dist1(indx::Int)
-    dirIn=""
-    SPM,lon,lat=read_SPM(dirIn)
-    siz=size(lon)
-    MetaFile=loop_task1(indx,SPM,siz)
-    return MetaFile
 end
