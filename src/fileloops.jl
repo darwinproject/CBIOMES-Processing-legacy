@@ -22,15 +22,16 @@ function loop_task1(indx,SPM,siz)
 end
 
 function loop_task1(indx,SPM,siz,msk)
-   dirIn="diags/"
-   filIn="state_2d_set1"
-   #filIn="daily_3d_set1"
-   dirOut="diags_interp/"
+   task=YAML.load(open("task.yml"))
+   dirIn=task["InputDir"][1]
+   filIn=task["InputFile"][1]
+   dirOut=task["OutputDir"]
    !isdir(dirOut) ? mkdir(dirOut) : nothing
 
    tmp1=readdir(dirIn)
    tmp1=filter(x -> occursin(filIn,x),tmp1)
    filList=filter(x -> occursin(".data",x),tmp1)
+   maximum(indx)>length(filList) ? error("missing files: "*filIn*"*") : nothing
    filList=filList[indx]
 
    !isa(filList,Array) ? filList=[filList] : nothing

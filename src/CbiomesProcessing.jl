@@ -1,6 +1,6 @@
 module CbiomesProcessing
 
-using JLD, MAT, SparseArrays, Plots, MeshArrays
+using JLD, MAT, YAML, SparseArrays, MeshArrays, Plots
 using Distributed, DistributedArrays, FortranFiles
 
 include("byproducts.jl")

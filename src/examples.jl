@@ -9,9 +9,9 @@ Use DistributedArrays to broacast over file indices in parallel
 For example:
 
 ```
-using CbiomesProcessing, Distributed, SparseArrays
+using CbiomesProcessing, Distributed, SparseArrays, YAML
 start_workers(3)
-@everywhere using CbiomesProcessing, SparseArrays
+@everywhere using CbiomesProcessing, SparseArrays, YAML
 cbioproc_distribute(1:12)
 ```
 
@@ -43,10 +43,15 @@ end
 Interpolate all variables for one record
 """
 function cbioproc_task1(indx::Int)
-    dirIn=""
-    M=load(dirIn*"MTRX.jld")
-    MetaFile=loop_task1(indx,M["MTRX"],M["siz2d"],M["msk2d"])
-    #MetaFile=loop_task1(indx,M["MTRX"],M["siz3d"],M["msk3d"])
+    task=YAML.load(open("task.yml"))
+    M=load(task["Specs"]["file"])
+    if task["Specs"]["mask"]=="msk2d"
+        MetaFile=loop_task1(indx,M["MTRX"],M["siz2d"],M["msk2d"])
+    elseif task["Specs"]["mask"]=="msk2d"
+        MetaFile=loop_task1(indx,M["MTRX"],M["siz3d"],M["msk3d"])
+    else
+        println("nothing happened")
+    end
 end
 
 """
