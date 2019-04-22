@@ -33,7 +33,8 @@ function cbioproc_distribute(indx::Union{UnitRange{Int},Array{Int,1},Int})
     length(i)>1 ? i=distribute(i) : nothing
     isa(i,DArray) ? println(i.indices) : nothing
     #MetaFile=cbioproc_task1.(i)
-    loop_task2.(i)
+    #loop_task2.(i)
+    loop_task3.(i)
 end
 
 """
