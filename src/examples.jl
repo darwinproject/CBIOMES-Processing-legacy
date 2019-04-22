@@ -9,9 +9,9 @@ Use DistributedArrays to broacast over file indices in parallel
 For example:
 
 ```
-using CbiomesProcessing, Distributed, SparseArrays, YAML
+using CbiomesProcessing, Distributed, SparseArrays
 start_workers(3)
-@everywhere using CbiomesProcessing, SparseArrays, YAML
+@everywhere using CbiomesProcessing, SparseArrays
 cbioproc_distribute(1:12)
 ```
 
@@ -32,7 +32,8 @@ function cbioproc_distribute(indx::Union{UnitRange{Int},Array{Int,1},Int})
     i=collect(indx)
     length(i)>1 ? i=distribute(i) : nothing
     isa(i,DArray) ? println(i.indices) : nothing
-    MetaFile=cbioproc_task1.(i)
+    #MetaFile=cbioproc_task1.(i)
+    loop_task2.(i)
 end
 
 """
