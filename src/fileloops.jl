@@ -239,6 +239,91 @@ function loop_task3(indx)
 end
 
 """
+    loop_task4(indx)
+
+Loop over model output files and time average them
+as a postprocessing step, and write the result
+to file (one subfolder for each variable)
+"""
+function loop_task4(indx)
+
+   task=YAML.load(open("task.yml"))
+
+   dirIn=task["InputDir"][1]
+   filIn=task["InputFile"][1]
+   dirOut=task["OutputDir"]
+   filOut=task["OutputFile"]
+   !isdir(dirOut) ? mkdir(dirOut) : nothing
+
+   siz=Tuple(task["OutputSize"])
+   prec=Float32
+
+   tmp1=readdir(dirIn*filIn)
+   tmp1=filter(x -> occursin(filIn,x),tmp1)
+   filList=filter(x -> occursin(".data",x),tmp1)
+
+   #maximum(indx)>length(filList) ? error("missing files: "*filIn*"*") : nothing
+   #filList=filList[indx]
+
+   !isa(filList,Array) ? filList=[filList] : nothing
+   nf=length(filList)
+
+   YearStart=task["Specs"]["YearStart"]
+   YearEnd=task["Specs"]["YearEnd"]
+
+   dayList=collect(1:366)
+   dayList=dayList[indx]
+   tmpList=Array{Array,1}(undef,366)
+
+   for ff=dayList
+
+      #identify all relevant records
+      tmp=fill(false,length(filList))
+      for ii=1:length(filList)
+         tt=DateTime(1992,1,1,12)+Dates.Day(ii-1)
+         dd=Day(Dates.Day(1)+tt-DateTime(year(tt),1,1,12))
+         year(tt)>=YearStart && year(tt)<=YearEnd && dd.value==ff ? tmp[ii]=true : nothing
+      end
+      recList=findall(tmp)
+      tmpList[ff]=recList
+      isempty(recList) ? error("no record found to average") : nothing
+
+      #compute time average
+      ave = fill(0.0,siz)
+      fac = inv(length(recList))
+      for ii=recList
+         fil=dirIn*filIn*"/"*filList[ii]
+         #println(fil)
+         tmp=Array{Float32,length(siz)}(undef,siz)
+         fid = open(fil)
+         read!(fid,tmp)
+         tmp = hton.(tmp)
+         close(fid)
+         ave=ave+fac*tmp
+      end
+
+      #output to file
+      recl=prod(siz)*4
+      filOut=dirOut*task["OutputFile"]*"/"
+      !isdir(filOut) ? mkdir(filOut) : nothing
+      gg=recList[1]
+      filOut=filOut*replace(filList[gg],task["InputFile"][1] => task["OutputFile"])
+      #println(filOut)
+      f =  FortranFile(filOut,"w",access="direct",recl=recl,convert="big-endian")
+      write(f,rec=1,Float32.(ave))
+      close(f)
+      #to re-read file:
+      #f =  FortranFile(filOut,"r",access="direct",recl=recl,convert="big-endian");
+      #tmp1=read(f,rec=1,(Float32,(720,360,50))); close(f);
+
+   end
+
+   return tmpList
+end
+
+
+
+"""
     loop_exampleA(indx,SPM,siz)
 
 Applies `InterpMatrix` in a loop over a subset of model output files (`filList[indx]`)
