@@ -84,12 +84,20 @@ to Satellite Chl as a postprocessing step, and write the result
 to file (one subfolder for each variable)
 """
 function loop_task2(indx)
+
    task=YAML.load(open("task.yml"))
+
    dirIn=task["InputDir"][1]
    filIn=task["InputFile"][1]
    dirOut=task["OutputDir"]
+   filOut=task["OutputFile"]
    !isdir(dirOut) ? mkdir(dirOut) : nothing
+
    siz=Tuple(task["OutputSize"])
+   prec=Float32
+
+   C=task["Specs"]["PolyCoeffs"]
+   a0=C[1]; a1=C[2]; a2=C[3]; a3=C[4]; a4=C[5];
 
    tmp1=readdir(dirIn*filIn)
    tmp1=filter(x -> occursin(filIn,x),tmp1)
@@ -99,7 +107,6 @@ function loop_task2(indx)
 
    !isa(filList,Array) ? filList=[filList] : nothing
    nf=length(filList)
-   prec=Float32
 
    wv_cci=[412, 443, 490, 510, 555, 670];
    wv_drwn3=[400,425,450,475,500,525,550,575,600,625,650,675,700];
@@ -112,8 +119,9 @@ function loop_task2(indx)
       ww[ii]=tmp[kk]/(wv_drwn3[kk+1]-wv_drwn3[kk])
    end
 
-   C=[0.2424    -2.7423 +1.8017 +0.0015 -1.2280] #OC3M-547 (MODIS)
-   a0=C[1]; a1=C[2]; a2=C[3]; a3=C[4]; a4=C[5];
+   #C=[0.2424    -2.7423 +1.8017 +0.0015 -1.2280] #OC3M-547 (MODIS)
+   #C=[0.3272    -2.9940 +2.7218 -1.2259 -0.5683] #OC4 (SeaWifs, CCI)
+   #a0=C[1]; a1=C[2]; a2=C[3]; a3=C[4]; a4=C[5];
 
    for ff=1:nf
       fil=dirIn*filIn*"/"*filList[ff]
@@ -149,7 +157,7 @@ function loop_task2(indx)
       recl=720*360*4
       filOut=dirOut*"chld/"
       !isdir(filOut) ? mkdir(filOut) : nothing
-      filOut=filOut*replace(filList[ff],task["InputFile"][1] => "chld")
+      filOut=filOut*replace(filList[ff],task["InputFile"][1] => task["OutputFile"])
       f =  FortranFile(filOut,"w",access="direct",recl=recl,convert="big-endian")
       write(f,rec=1,Float32.(chld))
       close(f)
