@@ -1,6 +1,6 @@
 # CbiomesProcessing.jl documentation
 
-The **CbiomesProcessing.jl** package implements a distributed workflow to post-process model output. For now, the driver function loop over files applies a pre-existent interpolation scheme. Additional functionalities (e.g., `OC-CCI` variable derivations) are expected to be added later and operated via the same workflow. Inter-operability with `MeshArrays.jl` is also a prospect.
+**CbiomesProcessing.jl** provides a simple, distributed workflow to e.g. post-process binary model output. Inter-operability with `MeshArrays.jl` and `NCTiles.jl` is an important prospect of this package.
 
 ## Contents
 
@@ -10,35 +10,18 @@ The **CbiomesProcessing.jl** package implements a distributed workflow to post-p
 ## Main Features
 
 Currently the reference implementation consists of
-- [`cbioproc_distribute()`](@ref) (inside `examples.jl`) is the driver function
-    - It calls `cbioproc_task1.(i)`
-- [`cbioproc_task1()`](@ref) (inside `examples.jl`) loads `MTRX.jld`
-    - It calls `loop_task1(indx,M["MTRX"],M["siz2d"],M["msk2d"])`
-- [`loop_task1()`](@ref) (inside `fileloops.jl`) loops over file sets and variables
-    - It calls `InterpMatrix` and then writes the result to a `FortranFile`
-
-#### More Notes
+- [`TaskDriver()`](@ref) (inside `utilities.jl`) is the driver function
+    - It calls e.g. `loop_task1.(i)`
+- [`CbiomesProcessing.loop_task1(indx::Int)`](@ref) (inside `fileloops.jl`) loads `M` from `MTRX.jld`
+    - It calls `loop_task1(indx,M)`
+- [`CbiomesProcessing.loop_task1(indx,M)`](@ref) (inside `fileloops.jl`) loops over files and variables
+    - It calls `MatrixInterp(in,SPM,siz) ` and writes result to a `FortranFile`
 
 [API / Functions](@ref) further documents the `CbiomesProcessing` module functions that are included in:
 
-- `examples.jl` includes simple top-level function examples (see [Examples](@ref))
-- `fileloops.jl` includes loops over binary files (see [`loop_exampleA()`](@ref) and [`loop_exampleB()`](@ref))
-- `byproducts.jl` provides lower-level operations such as [`InterpMatrix()`](@ref) and [`MetaFileRead()`](@ref).
-
-## Examples
-
-The real-life example is provided in the [`cbioproc_distribute`](@ref) documentation provided below. Examples that cover subsets of what `cbioproc_distribute` does are as follows.
-
-```
-shell> tar xf env.tar
-shell> cd env
-shell> mkdir devel/interp_output/
-shell> cp -p devel/interp_precomputed.mat devel/interp_output/
-
-julia> using CbiomesProcessing
-julia> outLoop1,outName=cbioproc_example1()
-julia> outLoop2,outMsk=cbioproc_example2()
-```
+- `examples.jl` includes simple examples without `TaskDriver`.
+- `fileloops.jl` includes task loops such as `CbiomesProcessing.loop_task1()`](@ref). A real-life example is provided in the [`TaskDriver`](@ref) documentation reported below.
+- `utilities.jl` provides low-level functions such as [`TaskDriver`](@ref), [`MatrixInterp()`](@ref), and [`MetaFileRead()`](@ref).
 
 ## Index
 
