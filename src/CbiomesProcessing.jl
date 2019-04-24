@@ -7,9 +7,7 @@ include("byproducts.jl")
 include("fileloops.jl")
 include("examples.jl")
 
-export StartWorkers, TaskDriver, MetaFileRead,
-
-export MatrixInterp
+export StartWorkers, TaskDriver, MetaFileRead, MatrixInterp
 export cbioproc_example1, cbioproc_example2
 
 #export AverageYear

@@ -1,5 +1,16 @@
 
 """
+    loop_task1(indx::Int)
+
+Interpolate all variables for one record
+"""
+function loop_task1(indx::Int)
+    task=YAML.load(open("task.yml"))
+    M=load(task["Specs"]["file"])
+    MetaFile=loop_task1(indx,M)
+end
+
+"""
     loop_task1(indx,M)
 
 Loop over a subset of model output files (`filList[indx]`), apply

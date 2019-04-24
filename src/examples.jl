@@ -2,17 +2,6 @@
 #Examples:
 
 """
-    cbioproc_task1(indx::Int)
-
-Interpolate all variables for one record
-"""
-function cbioproc_task1(indx::Int)
-    task=YAML.load(open("task.yml"))
-    M=load(task["Specs"]["file"])
-    MetaFile=loop_task1(indx,M)
-end
-
-"""
     cbioproc_example1()
 
 A 3D example without land mask or MeshArrays.
