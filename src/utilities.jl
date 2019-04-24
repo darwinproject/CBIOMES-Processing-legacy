@@ -102,11 +102,11 @@ function MetaFileRead(FileName::String)
 end
 
 """
-    MatrixInterp(in::Array{T,N},SPM,siz) where {T,N}
+    MatrixInterp(in::Array{T,N},MTRX,siz) where {T,N}
 
-Interpolate `in` using `SPM` to grid of size `siz`.
+Interpolate `in` using `MTRX` to grid of size `siz`.
 """
-function MatrixInterp(in::Array{T,N},SPM::SparseMatrixCSC,siz) where {T,N}
+function MatrixInterp(in::Array{T,N},MTRX::SparseMatrixCSC,siz) where {T,N}
     #input
     l=size(in,1)*size(in,2);
     m=size(in,3);
@@ -115,8 +115,8 @@ function MatrixInterp(in::Array{T,N},SPM::SparseMatrixCSC,siz) where {T,N}
     tmp1[isnan.(tmp1)].=0.
     siz=siz[1],siz[2],m
     #matrix product
-    tmp0=SPM*tmp0
-    tmp1=SPM*tmp1
+    tmp0=MTRX*tmp0
+    tmp1=MTRX*tmp1
     tmp1=tmp1./tmp0
     #this may be redundant:
     tmp1[tmp0 .== 0.] .= NaN

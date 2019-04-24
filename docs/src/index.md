@@ -15,7 +15,7 @@ Currently the reference implementation consists of
 - [`CbiomesProcessing.loop_task1(indx::Int)`](@ref) (inside `fileloops.jl`) loads `M` from `MTRX.jld`
     - It calls `loop_task1(indx,M)`
 - [`CbiomesProcessing.loop_task1(indx,M)`](@ref) (inside `fileloops.jl`) loops over files and variables
-    - It calls `MatrixInterp(in,SPM,siz) ` and writes result to a `FortranFile`
+    - It calls `MatrixInterp(in,MTRX,siz) ` and writes result to a `FortranFile`
 
 [API / Functions](@ref) further documents the `CbiomesProcessing` module functions that are included in:
 

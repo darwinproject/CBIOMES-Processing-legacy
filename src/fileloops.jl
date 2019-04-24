@@ -23,7 +23,7 @@ function loop_task1(indx,M)
    filIn=task["InputFile"][1]
    dirOut=task["OutputDir"]
    !isdir(dirOut) ? mkdir(dirOut) : nothing
-   SPM=M["MTRX"]
+   MTRX=M["MTRX"]
    msk=M[task["Specs"]["mask"]]
    siz=Tuple(task["OutputSize"])
 
@@ -54,7 +54,7 @@ function loop_task1(indx,M)
          read!(fid,tmp)
          tmp = hton.(tmp)
          !ismissing(msk) ? tmp=tmp.*msk : nothing
-         tmp=MatrixInterp(tmp,SPM,siz)
+         tmp=MatrixInterp(tmp,MTRX,siz)
          tmp=Float32.(tmp)
          #
          filOut=dirOut*strip(MetaFile["fldList"][vv])*"/"
