@@ -1,92 +1,50 @@
 # byproducts.jl
 
-AverageYear() = print("To be continued...")
-
 """
-    InterpMatrix(in::Array{T,N}) where {T,N}
+    StartWorkers(nwrkrs::Int)
 
-Reads `SPM,lon,lat` via `read_SPM` and calls
-InterpMatrix(in,SPM,siz).
+Start workers if needed.
 """
-function InterpMatrix(in::Array{T,N}) where {T,N}
-    dirIn=""
-    SPM,lon,lat=read_SPM(dirIn)
-    siz=size(lon)
-    out=InterpMatrix(in,SPM,siz)
+function StartWorkers(nwrkrs::Int)
+   set_workers = nwrkrs
+   nworkers() < set_workers ? addprocs(set_workers) : nothing
+   nworkers()
 end
 
 """
-    InterpMatrix(in::Array{T,N},SPM,siz) where {T,N}
+    TaskDriver()
 
-Interpolate `in` using `SPM` to grid of size `siz`.
+Broacast / distribute tasks over indices (e.g. file indices)
+
+For example:
+
+```
+using CbiomesProcessing, Distributed, SparseArrays
+StartWorkers(3)
+@everywhere using CbiomesProcessing, SparseArrays
+TaskDriver(1:12)
+```
+
+And to visualize results, for example:
+
+```
+using FortranFiles, Plots
+k=1
+recl=720*360*4
+fil="diags_interp/ETAN/ETAN.0000000732.data"
+#fil="diags_interp/THETA/TETA.0000000024.data"
+f =  FortranFile(fil,"r",access="direct",recl=recl,convert="big-endian")
+tmp=read(f,rec=k,(Float32,(720,360))); close(f)
+heatmap(tmp)
+```
 """
-function InterpMatrix(in::Array{T,N},SPM::SparseMatrixCSC,siz) where {T,N}
-    #input
-    l=size(in,1)*size(in,2);
-    m=size(in,3);
-    tmp1=reshape(in,l,m)
-    tmp0=Float64.(.!(isnan.(tmp1)))
-    tmp1[isnan.(tmp1)].=0.
-    siz=siz[1],siz[2],m
-    #matrix product
-    tmp0=SPM*tmp0
-    tmp1=SPM*tmp1
-    tmp1=tmp1./tmp0
-    #this may be redundant:
-    tmp1[tmp0 .== 0.] .= NaN
-    #output
-    out=reshape(tmp1,siz)
-    m==1 ? out=dropdims(out,dims=3) : nothing
-    return out
-end
-
-"""
-    read_SPM(dirIn::String)
-
-Reads pre-computed interpolation (sparse matrix) from
-`dirIn*"interp_precomputed.mat"`.
-"""
-function read_SPM(dirIn::String)
-    #vars = matread(dirIn*"interp_precomputed.mat")
-    file = matopen(dirIn*"interp_precomputed.mat")
-    interp=read(file, "interp")
-    lon=read(file, "lon")
-    lat=read(file, "lat")
-    SPM=interp["SPM"]
-    #println(keys(interp))
-    close(file)
-    return SPM,lon,lat
-end
-
-"""
-    prep_interp_jld()
-
-Repackage interpolation matrix, mask, etc to `.jld` file.
-"""
-function prep_interp_jld()
-    GCMGridSpec()
-    GCMGridLoad()
-    msk2d=mask(view(MeshArrays.hFacC,:,:,1),NaN,0)
-    msk3d=mask(MeshArrays.hFacC,NaN,0)
-    msk2d=convert2gcmfaces(msk2d)
-    msk3d=convert2gcmfaces(msk3d)
-
-    dirIn=""
-    MTRX,lon,lat=read_SPM(dirIn)
-    lon=vec(lon[:,1])
-    lat=vec(lat[1,:])
-
-    fid = open("GRID_LLC90/RC.data")
-    dep=Array{Float64,1}(undef,50)
-    read!(fid,dep)
-    close(fid)
-    dep = -hton.(dep)
-
-    siz2d=(length(lon),length(lat))
-    siz3d=(length(lon),length(lat),50)
-
-    save(dirIn*"MTRX.jld", "MTRX", MTRX, "lon", lon, "lat", lat, "dep", dep,
-    "msk2d", msk2d, "msk3d", msk3d, "siz2d", siz2d, "siz3d", siz3d)
+function TaskDriver(indx::Union{UnitRange{Int},Array{Int,1},Int})
+    i=collect(indx)
+    length(i)>1 ? i=distribute(i) : nothing
+    isa(i,DArray) ? println(i.indices) : nothing
+    #MetaFile=cbioproc_task1.(i)
+    #loop_task2.(i)
+    loop_task4.(i)
 end
 
 """
@@ -142,4 +100,78 @@ function MetaFileRead(FileName::String)
     end
 
     return MetaFile
+end
+
+"""
+    MatrixInterp(in::Array{T,N},SPM,siz) where {T,N}
+
+Interpolate `in` using `SPM` to grid of size `siz`.
+"""
+function MatrixInterp(in::Array{T,N},SPM::SparseMatrixCSC,siz) where {T,N}
+    #input
+    l=size(in,1)*size(in,2);
+    m=size(in,3);
+    tmp1=reshape(in,l,m)
+    tmp0=Float64.(.!(isnan.(tmp1)))
+    tmp1[isnan.(tmp1)].=0.
+    siz=siz[1],siz[2],m
+    #matrix product
+    tmp0=SPM*tmp0
+    tmp1=SPM*tmp1
+    tmp1=tmp1./tmp0
+    #this may be redundant:
+    tmp1[tmp0 .== 0.] .= NaN
+    #output
+    out=reshape(tmp1,siz)
+    m==1 ? out=dropdims(out,dims=3) : nothing
+    return out
+end
+
+"""
+    prep_MTRX()
+
+Repackage interpolation matrix, mask, etc to `.jld` file.
+"""
+function prep_MTRX()
+    GCMGridSpec()
+    GCMGridLoad()
+    msk2d=mask(view(MeshArrays.hFacC,:,:,1),NaN,0)
+    msk3d=mask(MeshArrays.hFacC,NaN,0)
+    msk2d=convert2gcmfaces(msk2d)
+    msk3d=convert2gcmfaces(msk3d)
+
+    dirIn=""
+    MTRX,lon,lat=read_SPM(dirIn)
+    lon=vec(lon[:,1])
+    lat=vec(lat[1,:])
+
+    fid = open("GRID_LLC90/RC.data")
+    dep=Array{Float64,1}(undef,50)
+    read!(fid,dep)
+    close(fid)
+    dep = -hton.(dep)
+
+    siz2d=(length(lon),length(lat))
+    siz3d=(length(lon),length(lat),50)
+
+    save(dirIn*"MTRX.jld", "MTRX", MTRX, "lon", lon, "lat", lat, "dep", dep,
+    "msk2d", msk2d, "msk3d", msk3d, "siz2d", siz2d, "siz3d", siz3d)
+end
+
+"""
+    read_SPM(dirIn::String)
+
+Reads pre-computed interpolation (sparse matrix) from
+`dirIn*"interp_precomputed.mat"`.
+"""
+function read_SPM(dirIn::String)
+    #vars = matread(dirIn*"interp_precomputed.mat")
+    file = matopen(dirIn*"interp_precomputed.mat")
+    interp=read(file, "interp")
+    lon=read(file, "lon")
+    lat=read(file, "lat")
+    SPM=interp["SPM"]
+    #println(keys(interp))
+    close(file)
+    return SPM,lon,lat
 end

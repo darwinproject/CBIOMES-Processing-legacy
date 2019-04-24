@@ -1,19 +1,9 @@
-"""
-    start_workers(nwrkrs::Int)
-
-Start workers if needed.
-"""
-function start_workers(nwrkrs::Int)
-   set_workers = nwrkrs
-   nworkers() < set_workers ? addprocs(set_workers) : nothing
-   nworkers()
-end
 
 """
     loop_task1(indx,M)
 
 Loop over a subset of model output files (`filList[indx]`), apply
-`InterpMatrix` (`M`) as a postprocessing step, and write the result
+`MatrixInterp` (`M`) as a postprocessing step, and write the result
 to file (one subfolder for each variable)
 """
 function loop_task1(indx,M)
@@ -53,7 +43,7 @@ function loop_task1(indx,M)
          read!(fid,tmp)
          tmp = hton.(tmp)
          !ismissing(msk) ? tmp=tmp.*msk : nothing
-         tmp=InterpMatrix(tmp,SPM,siz)
+         tmp=MatrixInterp(tmp,SPM,siz)
          tmp=Float32.(tmp)
          #
          filOut=dirOut*strip(MetaFile["fldList"][vv])*"/"
@@ -326,7 +316,7 @@ end
 """
     loop_exampleA(indx,SPM,siz)
 
-Applies `InterpMatrix` in a loop over a subset of model output files (`filList[indx]`)
+Applies `MatrixInterp` in a loop over a subset of model output files (`filList[indx]`)
 """
 function loop_exampleA(indx,SPM,siz)
    dirIn="diags/"
@@ -348,7 +338,7 @@ function loop_exampleA(indx,SPM,siz)
       read!(fid,fld);
       fld = hton.(fld);
       #println(size(fld))
-      out[ff]=InterpMatrix(fld,SPM,siz)
+      out[ff]=MatrixInterp(fld,SPM,siz)
    end
 
    return out
@@ -357,7 +347,7 @@ end
 """
     loop_exampleB(indx,SPM,siz)
 
-Applies `InterpMatrix` in a loop over a subset of model output files (`filList[indx]`)
+Applies `MatrixInterp` in a loop over a subset of model output files (`filList[indx]`)
 """
 function loop_exampleB(indx,SPM,siz)
    dirIn="diags/"
@@ -387,7 +377,7 @@ function loop_exampleB(indx,SPM,siz)
       for vv=1:nv
          read!(fid,tmp);
          tmp = hton.(tmp);
-         out[ff,vv]=InterpMatrix(tmp,SPM,siz)
+         out[ff,vv]=MatrixInterp(tmp,SPM,siz)
       end
    end
 
