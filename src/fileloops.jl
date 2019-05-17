@@ -187,8 +187,9 @@ function loop_task3(indx)
    filOut=task["OutputFile"]
    !isdir(dirOut) ? mkdir(dirOut) : nothing
 
-   siz=Tuple(task["OutputSize"])
+   siz=Tuple(task["InputSize"])
    prec=Float32
+   recl=prod(siz)*4
 
    tmp1=readdir(dirIn*filIn)
    tmp1=filter(x -> occursin(filIn,x),tmp1)
@@ -206,30 +207,29 @@ function loop_task3(indx)
    for ff=1:nf
       #1) read biomass
       fil=dirIn*filIn*"/"*filList[ff]
-      tmp=Array{Float32,3}(undef,(720,360,50))
+      tmp=Array{Float32,3}(undef,siz)
       fid = open(fil)
       read!(fid,tmp)
       tmp = hton.(tmp)
       close(fid)
 
       #2) compute export rate
-      PhytoExp=similar(tmp);
-      for kk=1:49
+      xprt=similar(tmp);
+      for kk=1:siz[3]-1
          tmp0=Wsink*max.(tmp[:,:,kk],0.0)
          tmp1=Wsink*max.(tmp[:,:,kk],0.0)
          tmp2=isfinite.(tmp[:,:,kk+1])
          tmp1[.!tmp2].=NaN
-         PhytoExp[:,:,kk]=tmp1
+         xprt[:,:,kk]=tmp1
       end
-      PhytoExp[:,:,50].=NaN
+      xprt[:,:,siz[3]].=NaN
 
       #println(fil)
-      recl=720*360*50*4
-      filOut=dirOut*"PhytoExp/"
+      filOut=dirOut*task["OutputFile"]*"/"
       !isdir(filOut) ? mkdir(filOut) : nothing
       filOut=filOut*replace(filList[ff],task["InputFile"][1] => task["OutputFile"])
       f =  FortranFile(filOut,"w",access="direct",recl=recl,convert="big-endian")
-      write(f,rec=1,Float32.(PhytoExp))
+      write(f,rec=1,Float32.(xprt))
       close(f)
       #to re-read file:
       #f =  FortranFile(filOut,"r",access="direct",recl=recl,convert="big-endian");
